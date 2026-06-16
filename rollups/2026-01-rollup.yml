@@ -1,0 +1,197 @@
+---
+rollup_summary:
+  title: "January 2026 Threat Intelligence Rollup — The Trust Economy Collapses"
+  period: "January 2026"
+  period_type: "monthly"
+  rollup_id: "RU-202601-001"
+  reports_synthesized: 38
+
+  executive_summary: |
+    January 2026 opened with a thesis that held for every single one of its
+    38 reports: attackers had stopped trying to break through enterprise
+    defenses and started walking through the front door. The month's defining
+    pattern — visible from day one through day thirty-one — was the systematic
+    exploitation of trusted systems. Identity providers, software supply chains,
+    AI platforms, residential proxy networks, browser extensions, CI/CD
+    pipelines, and security appliances themselves were the entry points. Not
+    vulnerabilities in the traditional sense — trust assumptions that
+    organizations had never audited.
+
+    The second defining thread was the convergence of nation-state and criminal
+    tactics into a single, industrialized ecosystem. North Korea alone ran
+    parallel campaigns: operatives getting hired into Amazon and other
+    enterprises directly (1,800+ blocked since April 2024), a VS Code supply
+    chain attack delivering BeaverTail/InvisibleFerret malware, and the
+    PurpleBravo campaign compromising 3,136 IPs across 20 organizations via
+    fake job interviews. Black Basta's leader was identified as having FSB/GRU
+    ties. The Kimwolf and Aisuru botnets industrialized residential proxies
+    across 2 million+ consumer devices to launder attack traffic through
+    employee home networks — specifically targeting the VPN trust boundary
+    between corporate and home environments.
+
+    The third thread was AI crossing from governance topic to active
+    operational threat on both sides. Attackers weaponized OpenAI's Assistants
+    API as C2 infrastructure (SesameOp). A Google Gemini prompt injection flaw
+    activated via calendar invite with zero user interaction. Malicious AI
+    coding extensions amassed 1.5 million downloads before detection. And
+    900,000 users had their AI conversations exfiltrated via "Prompt Poaching"
+    Chrome extensions. By month-end, AI governance was a regulatory priority
+    (EU opened a Grok investigation), a board risk, and an active attack
+    surface simultaneously.
+
+    By January 31, the pattern was unambiguous: the enterprise security model
+    built on "trusted tools, trusted vendors, trusted employees" had become the
+    primary attack surface.
+
+period_analysis:
+  dominant_patterns:
+    - pattern: "Trust infrastructure weaponization (identity, supply chain, vendor tools)"
+      frequency: "Appeared in 35 of 38 reports"
+      significance: |
+        The month's single dominant theme. Okta SSO was compromised via
+        vishing to gain instant wholesale access to Salesforce, Microsoft 365,
+        and Google Workspace. FortiGate firewalls were backdoored via a cloud
+        SSO zero-day. AWS disclosed CodeBreach — a misconfiguration that could
+        have poisoned SDK code delivered to every AWS customer. The VS Code
+        supply chain attack, the n8n CVE-10.0, malicious Outlook add-ins, and
+        compromised antivirus update channels all share the same structural
+        story: approval at one point in time, exploitation forever after. For
+        boards, the implication is that their vendor list is their attack surface
+        — not a control.
+
+    - pattern: "AI as attack vector and attack infrastructure"
+      frequency: "Appeared in 22 of 38 reports"
+      significance: |
+        January confirmed AI had moved from theoretical risk to documented,
+        active threat. Attackers used OpenAI's Assistants API as command-and-
+        control (SesameOp). Malicious AI tools accumulated millions of downloads.
+        Prompt injection in Google Gemini activated through routine calendar
+        queries. North Korean actors ran Contagious Interview — using fake job
+        interviews to deliver malware to developers. Organizations deploying AI
+        without governance had already been breached through it before most
+        governance frameworks were drafted.
+
+    - pattern: "Residential proxy industrialization and identity-first attacks"
+      frequency: "Appeared in 14 of 38 reports"
+      significance: |
+        The Kimwolf and Aisuru botnets' exploitation of 2M+ consumer devices
+        as residential proxy infrastructure represents a structural shift in
+        how attackers evade detection. By routing attacks through employee home
+        networks, they inherit the trust that corporate VPN configurations
+        extend to those devices. Combined with vishing-based Okta compromise
+        (which bypasses MFA entirely by capturing credentials and session tokens
+        in real time), identity-first attacks now represent the path of least
+        resistance into enterprise environments.
+
+  notable_escalations: |
+    Two escalations stand apart from prior periods. First, North Korea's
+    workforce infiltration program scaled to documented blocking of 1,800+
+    operatives at Amazon alone — representing a confirmed insider threat
+    campaign operating at industrial scale, with the goal of both revenue
+    generation for weapons programs and long-term access to enterprise
+    environments. Second, the AWS CodeBreach disclosure raised the prospect
+    of supply chain compromise at cloud-platform level — not a single vendor,
+    but the infrastructure layer beneath thousands of enterprise applications
+    simultaneously. Neither of these was a speculative risk in January. Both
+    were documented, active programs.
+
+  sector_concentration:
+    most_targeted:
+      - sector: "Financial Services"
+        why: "Targeted in almost every report — credential theft, session hijacking, ransomware, and AI-enabled fraud all converged on this sector as the highest-value data and payment infrastructure target."
+      - sector: "Technology and Software Development"
+        why: "Developer environments were the most-targeted attack surface of the month: VS Code, CI/CD pipelines, npm/PyPI packages, GitHub repositories, and AI coding tools. Compromising a developer provides direct access to production systems."
+      - sector: "Healthcare"
+        why: "AZ Monica hospital network demonstrated ransomware still causes direct operational harm in healthcare. Combined with data broker exposure of health records and identity theft at scale, healthcare was targeted for both disruption and data value."
+    emerging_targets:
+      - sector: "Home/Remote Work Infrastructure"
+        why: "The Kimwolf botnet's explicit targeting of the VPN trust boundary between corporate networks and employee home devices — Android TV boxes, SOHO routers — represents a new attack surface that most security programs do not monitor or control."
+      - sector: "AI Platform Infrastructure"
+        why: "Open WebUI, n8n, and other AI automation platforms emerged as high-value, low-governance targets. With 100,000+ exposed AI automation servers and CVE-10.0 vulnerabilities, this sector moved from niche to critical attack surface in a single month."
+
+strategic_synthesis:
+  what_changed_this_period: |
+    The clearest change between December 2025 and January 2026 is the scale and
+    formalization of identity-first attack infrastructure. Vishing against Okta,
+    residential proxy abuse, workforce infiltration, and AI-delivered credential
+    theft had all existed as techniques. January documented them operating
+    simultaneously, at industrial scale, in a coordinated ecosystem. The
+    Kimwolf botnet's explicit design to exploit the VPN trust boundary is not
+    opportunistic — it is a deliberate architectural response to corporate
+    endpoint hardening. Attackers adapted. The security perimeter moved to
+    the employee's kitchen table, and most organizations had no visibility there.
+
+    The other meaningful shift: AI governance moved from "future agenda item"
+    to "active incident category" in a single month. The EU's Grok investigation,
+    SesameOp using OpenAI infrastructure as C2, and Gemini's prompt injection
+    flaw all arrived in the same reporting period. Organizations that had not
+    established AI governance frameworks by January 2026 were already behind
+    the threat.
+
+  board_level_implications:
+    - implication: "Workforce identity verification must extend to contractors, remote hires, and anyone with privileged access — the insider threat is now an industrial-scale program, not an isolated risk"
+      action_horizon: "Immediate"
+    - implication: "AI governance frameworks are not a Q3 roadmap item — AI platforms were compromised, weaponized, and used as C2 infrastructure in January 2026"
+      action_horizon: "Immediate"
+    - implication: "Supply chain review cadence must move from annual to continuous — every tool in the stack with a remote dynamic dependency is a potential hostile takeover"
+      action_horizon: "This quarter"
+    - implication: "Home network and remote work infrastructure is now inside the security perimeter — the Kimwolf model makes this explicit"
+      action_horizon: "This year"
+
+  governance_priorities: |
+    Boards should prioritize three structural questions from January's pattern:
+    First, who has privileged access and how was their identity verified at
+    onboarding — and every subsequent access event? The North Korea workforce
+    infiltration program demonstrates that standard hiring processes are an
+    attack surface. Second, what AI tools are running in the enterprise and
+    what data can they access? January confirmed that AI infrastructure is both
+    a governance gap and an active intrusion path. Third, what does the
+    organization's software supply chain dependency map look like, and when
+    was it last audited against current threat intelligence? AWS CodeBreach,
+    VS Code malware, and malicious npm packages all emerged in the same month.
+
+forward_outlook:
+  next_period_predictions: |
+    The identity-first and supply chain patterns documented in January will
+    not reverse in February — they will deepen. Expect continued exploitation
+    of the Okta/SSO trust chain, further residential proxy botnet campaigns
+    targeting remote-work infrastructure, and additional AI platform abuse as
+    the attack surface expands with enterprise AI adoption. The disclosure of
+    six Windows zero-days in February Patch Tuesday (all actively exploited)
+    confirmed the pattern continued without interruption.
+
+    North Korea's parallel campaigns — workforce infiltration, developer
+    targeting, and supply chain poisoning — are likely to expand as the revenue
+    and intelligence value of these programs is documented and proven. Watch
+    for new recruitment-lure campaigns targeting AI and defense sector developers
+    specifically. The Contagious Interview pattern is adaptive and persistent.
+
+    AI governance regulatory pressure (EU's Grok investigation, CISA guidance)
+    will likely accelerate, but so will attacker use of AI platforms as delivery
+    and C2 infrastructure. Organizations with no AI acceptable use policy are
+    operating with an open attack surface that is actively being mapped.
+
+  watch_list:
+    - "Okta and SSO platform vishing campaigns — identity-first access remains the highest-return attack path"
+    - "VS Code and developer tool supply chain attacks — North Korea's Contagious Interview is adaptive and ongoing"
+    - "Residential proxy botnet evolution targeting corporate VPN trust boundaries (Kimwolf/Aisuru successors)"
+
+period_metrics:
+  total_reports: 38
+  critical_severity_count: 34
+  dominant_threat_categories:
+    - "Supply Chain Attack / Trust Infrastructure Exploitation"
+    - "Identity Compromise / Credential Theft"
+    - "AI Security / AI Platform Abuse"
+    - "Nation-State Operations (North Korea, Russia)"
+    - "Ransomware / Operational Disruption"
+
+metadata:
+  author: "Am Dum Dee"
+  rollup_date: "2026-01-31"
+  period_covered: "2026-01-01 to 2026-01-31"
+  confidence_level: "High"
+  post_metadata:
+    hook_used: "Trust economy collapse"
+    rollup_type: "monthly"
+    variation_round: "1"
