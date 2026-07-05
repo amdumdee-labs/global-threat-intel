@@ -1,7 +1,7 @@
 threat_summary:
   title: "Data-Theft Extortion Without Encryption: Kairos Collects $1M From a US Government Entity"
-  report_date: "2026-07-05"
-  threat_id: "TI-20260705-001"
+  report_date: "2026-07-04"
+  threat_id: "TI-20260704-001"
   severity_business: "High"
   severity_technical: "Medium"
 
@@ -230,7 +230,7 @@ source_articles:
 
 metadata:
   author: "Am Dum Dee"
-  last_updated: "2026-07-05"
+  last_updated: "2026-07-04
   threat_category:
     - "Data-theft extortion"
     - "Supply-chain compromise"
