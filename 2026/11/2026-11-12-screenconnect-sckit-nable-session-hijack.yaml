@@ -1,0 +1,244 @@
+---
+threat_summary:
+  title: "Trusted Administration Paths Under Attack: SCKit, N-central Follow-on Exploits, Session-Hijack Phishing and Industrial Software Flaws"
+  report_date: "2026-11-12"
+  threat_id: "TI-20261112-005"
+  severity_business: "Critical"
+  severity_technical: "High"
+
+  executive_summary: |
+    Blackpoint Cyber reported on November 12, 2026 that the toolkit behind the ongoing
+    ScreenConnect campaign, named SCKit, exploits an already-patched critical flaw
+    (CVE-2026-84869, CVSS 9.9) and also includes RelayTrap, a component that tries to
+    infect the workstations of technicians who investigate infected devices. It then
+    tries to steal their logged-in management sessions to spread across other customer
+    environments. A patch blocks the exploit but does not remove the risk of a
+    compromised operator session. There is no evidence yet that propagation to a
+    technician workstation has succeeded.
+
+    Boards should care because these are tools that managed service providers (MSPs)
+    use to administer many customers at once. N-able N-central, another such tool, faced
+    new public exploits (4EverAble2Shell and Agent2Shell) that work against its patched
+    version in certain configurations, and probing began within hours. Meanwhile, a
+    Google session-hijacking phishing campaign defeated reputation checks, and PTC patched
+    another critical flaw in Windchill and FlexPLM, products tied to a Cl0p extortion
+    campaign in July.
+
+    Time sensitivity is high. The ScreenConnect campaign was ongoing at the time of the
+    reports, N-able urged on-premises customers to disable its Legacy API immediately,
+    and PTC urges non-hosted customers to patch as soon as possible.
+
+threat_intelligence:
+  what_happened:
+    incident_overview: |
+      ScreenConnect: The recovered SCKit toolkit uses ScreenConnect's built-in Run Command
+      feature to download installers and scripts, then places two unauthorized access
+      clients for persistent control. RelayTrap replaces the legitimate guest client so
+      that a technician's next connection sends the payload back to the technician. If it
+      works, the malware searches the technician's browser data and memory for an
+      authenticated management session and uses it to push commands to other endpoints,
+      executing with the highest Windows privileges. Blackpoint confirmed that a fully
+      patched ScreenConnect client blocked the exploit payload in testing.
+
+      Initial access remains unconfirmed. Blackpoint and ConnectWise both point to
+      third-party extensions as a possible route, though Blackpoint found no technical link
+      between the extensions and SCKit. Huntress found that versions 1.0.31 and 1.0.32 of
+      one extension, RMM+, accepted a blank access key when none was configured, which
+      could allow commands to execute without going through normal login controls and
+      multi-factor authentication. Earlier reporting counted 6 compromised MSPs, 286 or
+      more endpoints and 47 organizations. The CVE was added to CISA's known-exploited list on
+      September 11, 2026.
+
+      N-able N-central: After Able2Shell fixes shipped on November 10, researcher Sean Bales
+      published two new sets of flaws. 4EverAble2Shell allows unauthenticated root-level
+      code execution on on-premises servers; Agent2Shell uses more than ten zero-days to
+      run commands on managed Windows agents with the highest privileges if the attacker
+      knows the appliance ID. N-able says the server issue depends on a non-default
+      configuration where the Legacy API is on and exposed to the internet, and that hosted
+      environments are not affected. Previdian observed probing within hours and an attempted
+      chain using a newly disclosed Apache Axis flaw; there is no evidence of successful
+      exploitation yet.
+
+      Other reporting: Material Security documented Operation CloudFire, a campaign since
+      mid-August using Google Calendar invites and Google's own link redirector to steal live
+      Google sessions through a reverse proxy, with 68,676 messages blocked and 897 domains
+      taken down in one month. PTC patched CVE-2026-126325 (CVSS v4 9.2), a deserialization
+      flaw in Windchill and FlexPLM. Google Cloud warned of three AMD Turin processor flaws
+      that need a guest patch and a stop-and-start of virtual machines; none is reported
+      exploited.
+
+    affected_organizations:
+      - name: "MSPs and customers using ConnectWise ScreenConnect"
+        impact: "Rogue remote access installed; potential lateral movement through technician sessions; 6 MSPs, 286+ endpoints, 47 organizations at last count."
+      - name: "On-premises N-able N-central customers"
+        impact: "Public exploits against patched builds in non-default configurations; probing observed; hosted environments not affected by the latest issue."
+      - name: "Corporate Google Workspace users"
+        impact: "Live sessions can be stolen, exposing mail, Drive and OAuth grants; 8,570 compromised sender addresses observed in one month."
+      - name: "Manufacturing and industrial firms running PTC Windchill and FlexPLM"
+        impact: "Critical remote code execution flaw patched; prior flaw exploited by Cl0p in a July data extortion campaign."
+      - name: "Google Cloud customers on AMD Turin VMs"
+        impact: "Medium-rated data-leak flaws within a VM; patching requires stop-and-start; no exploitation reported."
+
+    attack_methodology: |
+      The unifying method is borrowed authority. SCKit uses legitimate remote-support
+      features and tries to steal a technician's session so each new connection extends
+      access. The Google campaign reaches users through real Google links and proxies the
+      real sign-in page, so passwords and second-factor codes pass through to the
+      attacker.
+
+      The N-central and PTC cases show the other half: management and product software
+      with deep access, where one remote code execution flaw can mean control of
+      many systems, and published exploit code accelerates attacks.
+
+  why_it_matters:
+    business_risks:
+      financial_exposure: |
+        The sources provide no total cost figures for these incidents, so none are asserted.
+        Cost drivers: incident response across every endpoint a technician could reach,
+        rebuilding machines, credential and session resets, and downtime. watchTowr says
+        PTC compromises can mean material cost per hour of downtime in time-sensitive
+        manufacturing, logistics and fulfillment, and extortion and data-theft exposure.
+
+      regulatory_compliance: |
+        Breach notification duties may apply under privacy and sector rules (for example
+        GDPR, up to EUR 20 million or 4 percent of turnover) if customer data is accessed
+        through a compromised provider. NIS2 may cover managed service providers and
+        manufacturers depending on size and national law. CISA deadlines bind U.S. federal
+        agencies only. Counsel should confirm applicability.
+
+      competitive_impact: |
+        MSPs lose clients if their administration tooling becomes an attack path.
+        Manufacturers risk loss of product data and designs to extortion groups.
+        Organizations whose staff sessions are hijacked face trust damage with customers
+        and partners.
+
+      operational_disruption: |
+        Cleaning up requires reviewing run-command history, extension records, technician
+        workstations and browser sessions, per Blackpoint. N-able told on-premises
+        customers to disable Legacy API immediately. Google Cloud customers must stop and
+        start affected VMs after patches. Industrial downtime is costly per hour.
+
+    industry_patterns:
+      affected_sectors:
+        - "Managed IT services"
+        - "Manufacturing and industrial"
+        - "Cloud and enterprise software"
+        - "Corporate email and collaboration users"
+
+      trend_analysis: |
+        A recurring pattern: management tools and trusted platforms keep being targeted.
+        ScreenConnect and N-central both saw follow-on activity within days, and the
+        Windchill/FlexPLM family has had two critical flaws within about five months. Huntress
+        earlier reported a significant increase in 2026 in attacks using legitimate remote
+        management software. The Google campaign appears finished for now, but researchers
+        expect a similar pivot, and an unfinished Microsoft 365 variant already exists.
+
+technical_context:
+  vulnerability_details:
+    cve_identifier: "CVE-2026-84869 (ScreenConnect, CVSS 9.9); CVE-2026-126325 (PTC, CVSS v4 9.2); CVE-2026-90436 (Apache Axis, CVSS 9.8); CVE-2026-0004 (AMD Turin, Medium per Google); N-central Able2Shell variants (CVEs per N-able advisories)"
+    vulnerability_type: "Missing authorization in remote support, blank default access key in an extension, unsafe data handling, session theft and reverse-proxy phishing"
+    affected_systems:
+      - "ConnectWise ScreenConnect and third-party extensions (RMM+ 1.0.31 and 1.0.32)"
+      - "N-able N-central on-premises with Legacy API exposed"
+      - "PTC Windchill and FlexPLM (versions listed in CVE record)"
+      - "Google Workspace sessions"
+      - "Google Cloud C4D, N4D, H4D, Z4D and G4 VMs"
+    exploitation_status: "Active (ScreenConnect campaign; CVE-2026-84869 previously exploited; Google session hijacking). PoC public with probing observed (N-central). No exploitation reported (AMD Turin; PTC new flaw)."
+
+  attack_indicators:
+    - "Unrecognized remote-access clients on managed devices"
+    - "Unexpected Run Command history or command execution with no matching login activity"
+    - "Technician workstations behaving oddly after connecting to a suspect endpoint"
+    - "Calendar invites with voicemail, RFP, court or payment pretexts from known contacts"
+    - "Web shells or unexpected code execution on Windchill or FlexPLM hosts"
+
+strategic_response:
+  executive_decisions:
+    - priority: "Critical"
+      decision: "Require MSPs and internal IT to document protections for technician sessions, including extra approval for bulk actions and separate workstations for investigation."
+      business_justification: "A stolen technician session reaches every customer that technician manages."
+      cost_estimate: "Low to moderate; contract and process change."
+
+    - priority: "Critical"
+      decision: "Set and test a one-hour target to revoke sessions, contain access grants and reset an affected account."
+      business_justification: "Session hijack impact grows quickly while attackers hold a live session."
+      cost_estimate: "Low; mostly tabletop and tooling configuration."
+
+    - priority: "High"
+      decision: "Require vendors to disclose and justify any non-default, internet-exposed configuration, and audit third-party extensions."
+      business_justification: "N-able's latest issue and the RMM+ blank-key flaw both depended on configuration."
+      cost_estimate: "Low; procurement and review time."
+
+    - priority: "High"
+      decision: "Prioritize patching by downtime cost per hour and internet exposure, starting with industrial and management systems."
+      business_justification: "Volume of fixes makes uniform patching unrealistic."
+      cost_estimate: "Low; process change."
+
+    - priority: "High"
+      decision: "Require email and account protection vendors to show multi-signal detection that covers calendar invites and trusted-domain lures."
+      business_justification: "Reputation-only checks missed a campaign built on legitimate Google links."
+      cost_estimate: "Moderate; vendor evaluation."
+
+  governance_implications:
+    board_reporting: |
+      Report quarterly: number of MSPs and tools with administrative reach; share with
+      documented session protections; time to revoke a compromised session; count of
+      internet-exposed management tools; patch time for critical systems ranked by
+      downtime cost; and vendor non-default configuration exceptions.
+
+    disclosure_requirements: |
+      Check duties with counsel: privacy regulators, sector regulators, contractual notice
+      to customers and partners, and securities disclosure for listed companies. If an MSP
+      is compromised, confirm its notification obligations in the contract. This note is
+      not legal advice.
+
+analysis_and_insights:
+  uncomfortable_truths: |
+    A patch does not end the risk. Blackpoint's testing showed the ScreenConnect patch
+    blocked the exploit, yet a stolen operator session still allows abuse of legitimate
+    features. Programs measured by whether updates were applied miss this.
+
+    Reputation-based detection is also incomplete. The Google campaign used real
+    Google links and a legitimate challenge widget, so every standard reputation check
+    came back clean. Vendors who sell a single signal inherit that signal's blind spots.
+
+  strategic_lessons:
+    - "Protect administrator sessions as carefully as passwords."
+    - "Treat third-party extensions and non-default settings as part of the attack surface."
+    - "Plan for patches that fix the flaw but not the abused feature."
+    - "Rank patching by business downtime cost."
+
+forward_outlook:
+  predictions: |
+    Over the next 6 to 12 months, expect more attacks on management and support tools
+    and on the people who operate them, since one session can reach many customers.
+    Expect follow-on exploit releases against patched products and faster attacker
+    weaponization of disclosures.
+
+    Expect session-hijack phishing to rotate brands, including the unfinished Microsoft
+    365 variant. Organizations that can quickly revoke sessions and reduce administrator
+    reach will limit damage.
+
+source_articles:
+  - title: "SCKit Malware Turns ScreenConnect Support Sessions Into Potential MSP Attack Paths"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-12"
+  - title: "Google Cloud Warns Three AMD Turin CPU Flaws Could Leak Data Across Processes in VMs"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-12"
+  - title: "New N-central Exploits Work Against Patched Servers, Enable Root RCE and Windows SYSTEM Access"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-12"
+  - title: "Calendar Invites and Live Proxies: Inside a Google Session Hijacking Campaign"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-12"
+  - title: "PTC Patches Critical Windchill and FlexPLM Flaw That Could Enable Remote Code Execution"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-12"
+
+metadata:
+  author: "Am Dum Dee"
+  last_updated: "2026-11-12"
+  threat_category: ["Remote Management Tool Abuse", "Session Hijacking", "Industrial Software Vulnerability", "Third-Party Risk"]
+  affected_industries: ["Managed IT Services", "Manufacturing", "Cloud and Enterprise Software", "Corporate Email"]
+  confidence_level: "High"
