@@ -1,0 +1,232 @@
+---
+threat_summary:
+  title: "Fake Faces and Fake Hardware: Deepfake Social Engineering, Tampered Wallets and Eroding Trust Assumptions"
+  report_date: "2026-11-13"
+  threat_id: "TI-20261113-006"
+  severity_business: "Critical"
+  severity_technical: "Medium"
+
+  executive_summary: |
+    The FBI said on November 13, 2026 that North Korea-linked actors stole more than
+    $400 million in cryptocurrency over 18 months through FaceStealer, a scheme using
+    hijacked messaging accounts, recorded and AI-generated video, and fake technical errors
+    that trick targets into installing malware. In coordinated action, the U.S. seized the
+    cloud infrastructure used, more than 900 victim webcam recordings, and over $1.2 billion
+    in cryptocurrency stolen in a separate Binance-related hack by TraderTraitor actors.
+
+    Boards should care because the targets are decision-makers: Arctic Wolf reports over 80
+    percent of 677 identified targets across 58 countries are founders and C-suite executives.
+    Related reporting shows tampered hardware wallets sold by a reseller, cloud chip
+    protections defeated in lab conditions, and a PostgreSQL release fixing 52 flaws. The
+    common theme is that trust assumptions (a familiar face, an authorized reseller, a
+    hardware guarantee) can fail.
+
+    Time sensitivity is moderate to high. FaceStealer-style tactics are in active use, the
+    FBI is aware of attempts to target software maintainers, and Trezor customers who bought
+    from the affected reseller since March are advised to move funds now.
+
+threat_intelligence:
+  what_happened:
+    incident_overview: |
+      FaceStealer works in a cycle. Attackers hijack a victim's messaging account
+      (Telegram, LinkedIn, Slack or Discord), lock them out, and message their contacts
+      proposing an investment meeting. They send a scheduling invite and then a look-alike
+      Zoom or Teams link. In the meeting, they play recorded webcam video of a trusted
+      contact and sometimes deepfakes of well-known figures, then show a fake audio problem
+      and urge the target to run a "fix." That installs malware that steals wallets and
+      credentials and turns the victim into the next lure. The FBI also says its seizure
+      covers 900-plus victim recordings used for impersonation.
+
+      A related but separate campaign, Contagious Interview, uses fake recruiters and
+      "technical assessments" to get developers to run malicious code. A joint advisory
+      from Japan, the U.S., Australia and Germany in September estimated at least 30,000
+      compromised devices in 100 countries. Sophos disclosed one employee's corporate Mac was
+      compromised in September after cloning a fake coding assignment; JFrog found a decoy
+      company with a careers site and verified recruiters.
+
+      Trezor confirmed that three Safe 5 wallets bought from the reseller CryptoBilis contain
+      an implant that copies recovery phrases from the display and sends them over mobile
+      networks. Ledger reported similar implants and a coordinated draining of wallets. Trezor
+      says no owner has lost funds, 48 customers have contacted it, and it has cut its
+      reseller network by about 80 percent. Firmware 2.13.1 stops known implants from
+      capturing new data but cannot protect phrases captured earlier.
+
+      Technical research this week: two attacks (Mior and Skyfall) let a malicious cloud host
+      read or alter data in AMD SEV-SNP confidential VMs in lab tests; both need control of
+      the hypervisor, and neither company reports exploitation. PostgreSQL patched 52 flaws,
+      including CVE-2026-6460 (CVSS 8.8), a decades-old flaw that can allow code execution by
+      a user able to create objects; no attacks reported. A contributed article on AI agents
+      emphasizes tested controls for stopping a misbehaving agent.
+
+    affected_organizations:
+      - name: "Cryptocurrency, Web3 and finance executives (677 identified targets, 58 countries)"
+        impact: "More than $400 million stolen in 18 months; targets mostly founders and C-suite."
+      - name: "Software developers and open-source maintainers"
+        impact: "Targeted to reach code repositories and supply chains; Axios npm maintainer targeted earlier this year."
+      - name: "Trezor customers who bought from CryptoBilis (Southeast Asia) since March"
+        impact: "Three tampered wallets confirmed; advised to move funds and request replacement; no losses reported."
+      - name: "Confidential-computing users on AMD EPYC cloud servers"
+        impact: "Lab-demonstrated risk from a malicious host; fixes via firmware, with timing varying by server vendor."
+      - name: "Organizations running PostgreSQL (versions before 18.7, 17.12, 16.16, 15.20, 14.25)"
+        impact: "Patching plus extension rebuilds required; version 14 is end-of-life."
+
+    attack_methodology: |
+      FaceStealer exploits trust in known people. The attacker uses a real compromised
+      account, real recorded footage and a plausible problem, so the victim installs the
+      malware themselves. Contagious Interview delivers malicious code through hiring
+      processes, and hardware implants abuse the supply chain between manufacturer and
+      customer.
+
+      The cloud chip and database findings are different: they require elevated access
+      (a malicious host, or a user with object-creation rights), so they matter most to
+      cloud and multi-tenant operators and are less likely to be first-stage attacks.
+
+  why_it_matters:
+    business_risks:
+      financial_exposure: |
+        Direct: over $400 million stolen from FaceStealer victims, per the FBI. Seizures of
+        over $1.2 billion in a separate case show the scale of North Korean theft. For
+        individual firms, exposure includes stolen funds, wallet and key replacement,
+        investigation costs and legal fees. The sources provide no per-victim averages.
+
+      regulatory_compliance: |
+        Compromised executive accounts can trigger breach-notification duties under privacy
+        and sector rules (for example GDPR, up to EUR 20 million or 4 percent of turnover).
+        Financial and crypto firms face sanctions-compliance risk when funds flow to
+        sanctioned actors, and U.S. authorities tie these thefts to weapons funding. Counsel
+        should confirm obligations by jurisdiction.
+
+      competitive_impact: |
+        Brands that sell hardware or manage funds depend on trust. Trezor cut roughly 80
+        percent of its resellers to protect it. Cloud providers that market confidential
+        computing face scrutiny when research shows limits, though fixes exist.
+
+      operational_disruption: |
+        Wallet owners must migrate funds and recovery phrases. PostgreSQL operators must
+        update servers, rebuild extensions, update client tools, reindex and take new full
+        backups. Cloud users depend on providers for firmware updates, with some AMD fixes due
+        in November and December.
+
+    industry_patterns:
+      affected_sectors:
+        - "Cryptocurrency and Web3"
+        - "Software development and open source"
+        - "Cloud computing"
+        - "Hardware and consumer devices"
+        - "Database and enterprise IT"
+
+      trend_analysis: |
+        A growing pattern of attacks on people and supply chains rather than systems.
+        FaceStealer expanded from 400-plus targets to 677 and added generative AI for
+        avatars and synthetic participants. Hardware tampering affected two wallet brands
+        through the same reseller. Researchers are also repeatedly finding flaws in
+        hardware trust boundaries, though those require privileged positions.
+
+technical_context:
+  vulnerability_details:
+    cve_identifier: "CVE-2026-6460 (PostgreSQL, CVSS 8.8); CVE-2026-0462 (AMD Mior, CVSS 5.9); CVE-2026-40671 (AMD Skyfall, 4.9); CVE-2026-18448 (EDK II, 5.6). FaceStealer and wallet implants: no CVE."
+    vulnerability_type: "Social engineering with deepfake media, hardware supply chain tampering, privileged-attacker data leaks in confidential VMs, and type-confusion in a database"
+    affected_systems:
+      - "Messaging accounts (Telegram, LinkedIn, Slack, Discord) and video meeting links"
+      - "Trezor Safe 5 wallets from the CryptoBilis reseller"
+      - "AMD EPYC 7003, 8004, 8005, 9004 and 9005 servers using SEV-SNP"
+      - "PostgreSQL 14 to 18 and C-language extensions"
+    exploitation_status: "Active (FaceStealer, Contagious Interview, wallet implants). PoC or lab only (Mior, Skyfall). No attacks reported (PostgreSQL CVE-2026-6460; exploit writeup partially public)."
+
+  attack_indicators:
+    - "Unexpected meeting invites from a known contact on a messaging app, especially about investments"
+    - "Meeting links using look-alike domains, or fake audio errors urging a quick fix"
+    - "Recruiters asking you to run a repository, share your whole screen or download code during a call"
+    - "Hardware wallets purchased from unofficial or no-longer-authorized resellers"
+    - "Unusual contact from someone you cannot verify on a second channel"
+
+strategic_response:
+  executive_decisions:
+    - priority: "Critical"
+      decision: "Mandate out-of-band verification (a separate known channel) for any payment, key, access or wallet request made over a video or chat call."
+      business_justification: "Deepfakes and hijacked accounts defeat recognition of faces, voices and sender names."
+      cost_estimate: "Low; policy and training."
+
+    - priority: "Critical"
+      decision: "Prohibit running downloaded code, scripts or 'fixes' from calls or interviews on work devices, and require disposable virtual machines for any assessment."
+      business_justification: "JFrog and the FBI show these lures bypass professional-looking checks."
+      cost_estimate: "Low to moderate; virtual machine tooling for hiring teams."
+
+    - priority: "High"
+      decision: "Provide executive-specific briefings and protect executives' messaging and social accounts with stronger access controls."
+      business_justification: "Over 80 percent of identified targets were founders and C-suite."
+      cost_estimate: "Low to moderate; security staff time."
+
+    - priority: "High"
+      decision: "Adopt an authorized-supplier policy for hardware, including wallets and devices that hold keys, and report reseller changes to the board."
+      business_justification: "Tampering happened between manufacturer and customer."
+      cost_estimate: "Low; procurement policy."
+
+    - priority: "High"
+      decision: "Obtain written confirmation from cloud providers on which processor-level protections you rely on, the patch timelines and your verification responsibilities."
+      business_justification: "AMD fixes depend on server makers and cloud providers; advisories do not tell VM owners how to verify."
+      cost_estimate: "Low; contract and vendor management."
+
+  governance_implications:
+    board_reporting: |
+      Report quarterly: share of high-risk requests verified out-of-band; executives and
+      developers trained against deepfake lures; hardware sourced from authorized suppliers;
+      time to patch database and cloud firmware; AI agents with documented owners, revocation
+      steps and tested containment; and incidents of attempted impersonation.
+
+    disclosure_requirements: |
+      Check duties with counsel: privacy regulators, financial regulators, sanctions rules
+      for funds linked to North Korea, contractual notice, and securities disclosure for
+      listed companies. Report fraud attempts to the FBI where applicable. This note is not
+      legal advice.
+
+analysis_and_insights:
+  uncomfortable_truths: |
+    Many organizations still treat a familiar face or voice as proof of identity. The FBI's
+    case shows attackers use real recorded footage of colleagues and deepfakes of known
+    figures, and train staff to see video as evidence. That is no longer safe.
+
+    Security promises also have limits. Confidential computing protects against a defined
+    set of attackers and relies on your cloud provider's firmware updates. Contributed
+    articles from vendors, such as the AI agent containment piece, are useful reading but
+    include product promotion; evaluate them accordingly.
+
+  strategic_lessons:
+    - "Verify identity and requests out of band; never on the same channel."
+    - "Treat interview assignments and meeting 'fixes' as untrusted code."
+    - "Buy sensitive hardware only from authorized suppliers."
+    - "Know which security guarantees depend on your vendor's patches."
+
+forward_outlook:
+  predictions: |
+    Over the next 6 to 12 months, expect North Korea-linked actors to adapt after the
+    seizures, continue targeting executives and developers, and use generative AI for more
+    convincing media. Software maintainers are a stated concern of the FBI.
+
+    Expect more scrutiny of hardware reseller chains and cloud chip protections. Patching
+    pressure on databases will continue, with end-of-life versions (PostgreSQL 14) left
+    unprotected.
+
+source_articles:
+  - title: "PostgreSQL Patches 52 Flaws, Including 22-Year-Old Bug Enabling Authenticated RCE"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-13"
+  - title: "New Mior and Skyfall Attacks Let Rogue Cloud Hosts Steal Secrets From AMD SEV-SNP VMs"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-13"
+  - title: "FBI Says North Korean Hackers Stole Over $400 Million in Crypto Using Deepfake Video Calls"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-13"
+  - title: "Trezor Confirms Hidden Implants in CryptoBilis-Sold Wallets That Can Steal Recovery Phrases"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-13"
+  - title: "When an AI Agent Goes Wrong, Can You Stop It?"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-13"
+
+metadata:
+  author: "Am Dum Dee"
+  last_updated: "2026-11-13"
+  threat_category: ["Social Engineering", "Deepfake Fraud", "Hardware Supply Chain", "State-Sponsored Theft"]
+  affected_industries: ["Cryptocurrency", "Software Development", "Cloud Computing", "Financial Services"]
+  confidence_level: "High"
