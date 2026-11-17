@@ -1,0 +1,231 @@
+---
+threat_summary:
+  title: "Vendor Exposure, AI-Accelerated Intrusions and Consent Liability: Fireworks AI Fallout, ARTEX, TSMC and Meta's EUR 805 Million Fine"
+  report_date: "2026-11-15"
+  threat_id: "TI-20261115-008"
+  severity_business: "Critical"
+  severity_technical: "High"
+
+  executive_summary: |
+    Three connected stories dominate this period. First, the FBI warned on November 14,
+    2026 that threat actors are using ARTEX, an AI-powered penetration testing framework,
+    to automate intrusions, with some progressing from targeting to privileged access in
+    under three hours. Second, a single stolen vendor key at Fireworks AI has now been tied
+    to Cursor (a trojanized Claude Code extension reaching up to 5,000 users), Uber (driver's
+    license data) and Notion. Third, TSMC confirmed leaked employee data matched data
+    held by a cloud service provider, and Italy fined Meta EUR 805 million over default
+    gallery access in Facebook for Android.
+
+    Boards should care because liability follows data and consent decisions regardless of
+    whose server holds the data. TSMC reported no evidence its own systems were compromised
+    yet still faces an employee data auction. Meta's fine, about 0.47 percent of global
+    revenue, shows privacy regulators can penalize product design choices.
+
+    Time sensitivity is high. TSMC's data auction had a first deadline of November 15
+    before free release, ARTEX remains available through forks and a commercial edition, and
+    Meta faces a 60-day compliance deadline.
+
+threat_intelligence:
+  what_happened:
+    incident_overview: |
+      ARTEX: Released on GitHub in July 2026 and removed by its developer on October 8
+      after abuse reports, ARTEX uses external large language models (including Claude,
+      GPT, DeepSeek, GLM, Grok and Kimi) to run reconnaissance, find vulnerabilities,
+      escalate privileges and steal data with little human input. The FBI says multiple
+      actors have used it since at least August, and that it remains available through
+      forks, archives and a commercial edition. Researchers found over 1,600 exposed ARTEX
+      consoles as of early November. Documented cases include the October ConnectWise Cloud
+      Backup supply-chain attack (Huntress counted at least 162 compromised Microsoft 365
+      tenants; Microsoft attributed it to China-aligned Storm-0940, which attempted
+      authentication against more than 2,250 downstream tenants), attacks on South Korean
+      banks exposing about 67,000 people, and a gang arrested in South Korea for attacks on
+      over 90 organizations and about 8.2 million stolen records.
+
+      Fireworks AI: Cursor said an access key it issued to Fireworks was exposed and used to
+      copy data from a shared storage bucket holding agent traces, some with unredacted
+      credentials (fewer than 0.01 percent of customers). The attacker used these to
+      reach other Cursor systems and, on October 29, placed trojanized Claude Code extension
+      versions 2.1.312 and 2.1.313 on the marketplace cache for about 11 hours. At most 5,000
+      users may have received them. Cursor has moved inference off Fireworks and reports
+      no further malicious activity since November 1. Uber disclosed that a service
+      provider's compromised credentials exposed thousands of drivers' license records;
+      TechCrunch identified the provider as Fireworks AI, which Uber has not confirmed in the
+      filing as described. Notion also confirmed data theft tied to the incident.
+
+      TSMC: A threat actor using the alias SmithBianl posted a 499-row sample on November 8,
+      claiming a 6.9GB dataset of 46,000 employee records (national IDs, addresses, contact
+      and banking details) and opened an auction at 3 BTC (about $65,000). TSMC confirmed
+      current and former employee data was exposed, matched it to data held by a cloud
+      service provider, found no evidence its own systems were compromised, and says
+      operations and customers are unaffected. The record count is the actor's claim.
+
+      Meta: Italy's Garante fined Meta EUR 805 million for a Facebook for Android feature
+      that suggested gallery photos, enabled by default under one broad permission, affecting
+      about 20 million Italian users. The authority ordered separate consent and default-off
+      status within 60 days. Meta calls the fine disproportionate and plans to appeal.
+
+    affected_organizations:
+      - name: "Organizations targeted with ARTEX (finance, government, technology, defense, healthcare)"
+        impact: "Faster, multi-target intrusions; examples include 162 compromised Microsoft 365 tenants and 67,000 people's data at Korean banks."
+      - name: "Cursor and up to 5,000 developers"
+        impact: "Trojanized extension served for about 11 hours; internal data and some customer credentials exposed."
+      - name: "Uber and Notion (Fireworks AI incident)"
+        impact: "Uber: thousands of drivers' license records. Notion: data stolen, details limited."
+      - name: "TSMC (semiconductors)"
+        impact: "Current and former employee data leaked and auctioned; operations and customers unaffected per company."
+      - name: "Meta (Facebook for Android, Italy)"
+        impact: "EUR 805 million fine; mandated consent changes; appeal planned."
+
+    attack_methodology: |
+      ARTEX converts an operator's goals into commands run by specialized AI agents. It is
+      most effective against overlooked systems such as partner portals, employee
+      applications, legacy services and third-party integrations. The Fireworks and TSMC
+      cases show the other route: credentials or data held at a supplier become the
+      entry point. Meta's case is not an attack but a regulatory finding that default
+      access without specific consent breaches Italian privacy law.
+
+  why_it_matters:
+    business_risks:
+      financial_exposure: |
+        Meta's fine of EUR 805 million is about 0.47 percent of global revenue. TSMC
+        reported $122.4 billion in annual revenue; no breach cost figure is given.
+        Employee banking data creates fraud and notification costs. The sources give no
+        cost figures for Cursor, Uber or ARTEX victims, so none are asserted.
+
+      regulatory_compliance: |
+        Italy applied Article 122 of its Privacy Code, which implements the EU ePrivacy
+        Directive; no actual harm or data transmission needs to be shown. GDPR fines can reach
+        EUR 20 million or 4 percent of global turnover. TSMC made an SEC filing. Uber
+        filed with California. Counsel should confirm which regimes apply.
+
+      competitive_impact: |
+        Vendor-driven breaches harm the customer-facing brand. Attackers using AI tools
+        lower the skill needed to run multi-target campaigns, widening the attacker pool.
+
+      operational_disruption: |
+        Cursor disabled services and rebuilt its marketplace. Meta must change its product
+        and consent flow within 60 days. Short intrusion timelines (under three hours) leave
+        little time to respond.
+
+    industry_patterns:
+      affected_sectors:
+        - "Semiconductors and manufacturing"
+        - "AI and developer platforms"
+        - "Technology and social media"
+        - "Banking and financial services"
+        - "Mobility and productivity software"
+
+      trend_analysis: |
+        A worsening pattern. The Fireworks AI key theft has now reached at least four named
+        companies. ARTEX spread through forks even after its developer removed it. Privacy
+        regulators are also acting on product design, not only breaches.
+
+technical_context:
+  vulnerability_details:
+    cve_identifier: "N/A (credential exposure, AI-automated intrusion tooling and consent design)"
+    vulnerability_type: "Exposed vendor keys, secrets left in shared data, AI-automated exploitation of overlooked systems, and bundled default permissions"
+    affected_systems:
+      - "Fireworks AI keys and shared storage with customers"
+      - "Cursor VS Code extension marketplace cache"
+      - "Cloud service provider storage used by TSMC"
+      - "Internet-facing partner portals and legacy services targeted by ARTEX"
+      - "Facebook for Android gallery permission"
+    exploitation_status: "Active (ARTEX campaigns, Fireworks-linked breaches, TSMC data auction). Regulatory enforcement (Meta)."
+
+  attack_indicators:
+    - "Vendor notices of key or credential exposure"
+    - "Bursts of automated requests and unusual cloud or privilege changes"
+    - "Employee or customer data offered for sale or auction online"
+    - "Unexpected extension versions in developer marketplaces"
+    - "Application permissions broader than the feature requiring them"
+
+strategic_response:
+  executive_decisions:
+    - priority: "Critical"
+      decision: "Inventory every vendor holding employee or customer data, name an owner for each, and require breach notification and key-revocation duties in contracts."
+      business_justification: "TSMC and the Fireworks victims were affected through vendors."
+      cost_estimate: "Low to moderate; procurement and legal effort."
+
+    - priority: "Critical"
+      decision: "Set and test a one-hour target for revoking a compromised vendor's access."
+      business_justification: "ARTEX-style intrusions can reach privileged access in under three hours."
+      cost_estimate: "Low; drills and process."
+
+    - priority: "High"
+      decision: "Require legal and privacy review of every permission request and consent screen."
+      business_justification: "Meta's fine was based on permission design, regardless of harm."
+      cost_estimate: "Low; review process."
+
+    - priority: "High"
+      decision: "Prioritize security of partner portals, legacy services and third-party integrations."
+      business_justification: "The FBI says ARTEX is effective against these overlooked systems."
+      cost_estimate: "Moderate; discovery and remediation."
+
+    - priority: "High"
+      decision: "Remove secrets from logs, traces and shared datasets, and set retention limits."
+      business_justification: "Unredacted credentials in shared traces extended the Cursor breach."
+      cost_estimate: "Low to moderate; engineering and governance."
+
+  governance_implications:
+    board_reporting: |
+      Report quarterly: vendors with employee or customer data and share with named owners;
+      vendor access revocation time in drills; internet-facing legacy and partner systems
+      inventoried; secrets found in shared datasets; consent reviews completed for
+      user-facing features.
+
+    disclosure_requirements: |
+      Confirm duties with counsel: privacy regulators, securities filings (TSMC filed with
+      the SEC), state breach laws (Uber filed in California), and ePrivacy or GDPR consent
+      rules. Employees whose banking data is exposed need prompt notification. Organizations
+      can report ARTEX activity to the FBI or its IC3. This note is not legal advice.
+
+analysis_and_insights:
+  uncomfortable_truths: |
+    A clean internal environment is not safety. TSMC said it found no evidence its own
+    systems were compromised, while employee data was being auctioned. Likewise, Meta's
+    liability arose from design choices, not an attack. Security and privacy exposure now
+    includes what you ask users to approve and what you let suppliers hold.
+
+    AI tooling changes the pace. Programs built around weekly review cycles do not fit
+    intrusions that reach privileged access within hours. Vendors promising detection
+    should be asked how it helps at that speed.
+
+  strategic_lessons:
+    - "Data at your vendors is your exposure."
+    - "Consent design is a legal and security control."
+    - "Overlooked internet-facing systems are the first targets for automated attackers."
+    - "Distinguish attacker claims from confirmed facts in board reports."
+
+forward_outlook:
+  predictions: |
+    Over the next 6 to 12 months, expect continued fallout from the Fireworks AI incident
+    and similar vendor key thefts, wider use of ARTEX and copies by actors of varied skill,
+    and more extortion through data auctions.
+
+    Expect regulators to scrutinize default permissions and consent flows following Italy's
+    action, and Meta's appeal to be watched as a reference point. The Garante may also
+    examine a newer cloud-processing feature.
+
+source_articles:
+  - title: "Italy Fines Meta EUR 805 Million Over Facebook's Android Gallery Access Without Explicit Consent"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-15"
+  - title: "Cursor Says Stolen Fireworks AI Key Led to Trojanized Claude Code Extension Incident"
+    url: "https://thehackernews.com (article URL not supplied; locate by title)"
+    date: "2026-11-15"
+  - title: "FBI warns ARTEX AI hacking tool is powering global cyberattacks"
+    url: "https://www.bleepingcomputer.com (article URL not supplied; locate by title)"
+    date: "2026-11-15"
+  - title: "TSMC employee data breach linked to cloud provider"
+    url: "https://www.bleepingcomputer.com (article URL not supplied; locate by title)"
+    date: "2026-11-15"
+  - title: "AdGuard VPN drops to $40.79 for five years until midnight (BleepingComputer Deals; promotional, no threat content used)"
+    url: "https://www.bleepingcomputer.com (article URL not supplied; locate by title)"
+    date: "2026-11-15"
+
+metadata:
+  author: "Am Dum Dee"
+  last_updated: "2026-11-15"
+  threat_category: ["AI-Enabled Attacks", "Third-Party Risk", "Data Extortion", "Privacy Enforcement"]
+  affected_industries: ["Semiconductors", "AI and Developer Platforms", "Technology", "Financial Services", "Mobility"]
+  confidence_level: "High"
