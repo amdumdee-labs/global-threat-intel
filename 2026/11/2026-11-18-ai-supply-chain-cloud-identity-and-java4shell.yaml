@@ -1,0 +1,219 @@
+# FILENAME: 2026-11-21-ai-supply-chain-cloud-identity-and-java4shell.yaml
+---
+threat_summary:
+  title: "Trusted Software and Trusted Identities Turned Against You: Microsoft AI Package, Russian Cloud Espionage, Java4Shell and Puppet"
+  report_date: "2026-11-18"
+  threat_id: "TI-20261118-002"
+  severity_business: "Critical"
+  severity_technical: "Critical"
+
+  executive_summary: |
+    Four live threats reported on 17-18 November 2026 target the systems that hold the keys to everything else.
+    Attackers briefly poisoned Microsoft's official Agent Framework package on PyPI (a public software library
+    service) to steal cloud credentials. Russia-linked Cold Relic is chaining one hijacked cloud account into
+    break-ins at partner organizations. Java4Shell, a Java flaw, is now being probed by attackers. And a critical
+    Puppet flaw, which controls fleets of servers, is confirmed as actively exploited.
+
+    Boards should care because each threat reaches the central control points: cloud identities, build pipelines,
+    identity servers and configuration management. One compromise there can spread across the whole estate and
+    into partners and customers.
+
+    Time sensitivity: US federal agencies must fix Puppet by 1 December 2026. Fixes for Java4Shell and Puppet
+    exist today. The Microsoft package compromise had a roughly 45-minute window, so exposure is a log-review
+    question that can be answered this week.
+
+threat_intelligence:
+  what_happened:
+    incident_overview: |
+      Microsoft agent-framework (PyPI): malicious versions 1.26.1 and 1.26.2 were published 33 minutes apart on
+      17 November. They ran a credential stealer every time Python started, even if the package was never used. The
+      stealer took cloud login tokens, pipeline credentials and secrets files, and asked Azure and GitHub to issue
+      fresh credentials, so changing stored passwords alone is not enough. The package has about 190,000
+      monthly downloads. Both versions were quarantined, and Microsoft made some repositories private. How the
+      attacker obtained publishing access is unclear.
+
+      Cold Relic (Google Mandiant and GTIG): the group took over a US organization's Google Workspace in late
+      2025 through a stolen administrator login plus repeated approval prompts until the victim tapped
+      accept. It registered its own devices and passkeys, copied the whole cloud drive and staff directory, and deleted
+      alerts. Months later it used the stolen staff directory and emails to impersonate employees and phish a
+      second US organization. Passkeys it enrolled survived password and session resets.
+
+      Java4Shell (CVE-2026-114938): CISA urged immediate patching. The flaw sits in how some Java servers
+      process encoded text, and can crash the program or allow remote code execution under specific conditions
+      (x86-64 servers with a certain CPU feature, unpatched OpenJDK 17.0.6 or later, attacker-controlled input).
+      Oracle and OpenJDK patches are out. watchTowr, Cloudflare and Previdian report early exploitation
+      attempts. Affected products can include Keycloak, Jira, Confluence, Artifactory, Jenkins and PingFederate.
+
+      Puppet (CVE-2026-115731, CVSS 9.4): CISA added this to its Known Exploited Vulnerabilities list. An
+      attacker with any valid agent certificate can run code on the Puppet server, and weak certificate signing
+      settings can let an outsider obtain one. Perforce released fixes on 3 November. A user reported exploitation
+      on 4 November. Puppet often has authority over entire server fleets.
+
+    affected_organizations:
+      - name: "Organizations using Microsoft Agent Framework in Python builds or cloud pipelines (Azure, GitHub Actions)"
+        impact: "Possible theft of cloud identities and secrets if the malicious versions were installed in the window; no victim count published."
+      - name: "Government, defense contractors, NGOs in Europe and North America"
+        impact: "Full drive and directory theft, long-term hidden access, follow-on phishing of partners."
+      - name: "Operators of Java-based internet-facing applications and identity or build tools"
+        impact: "Outage risk and possible remote takeover; reconnaissance and blind exploitation attempts already seen."
+      - name: "Enterprises and agencies running Puppet Enterprise, Puppet Core or OpenVox"
+        impact: "Server takeover, theft of certificate signing keys, impersonation of other hosts, potential ransomware deployment."
+
+    attack_methodology: |
+      Each attack abuses implicit trust. The Python package carried Microsoft's name, so installation was allowed.
+      Cold Relic relies on legitimate administrator access and legitimate-looking staff emails, so it looks like
+      normal work. Java4Shell needs attacker-controlled input to reach a vulnerable server. Puppet's weakness
+      depends on how loosely certificates are approved. In every case the payoff is the same: credentials and central
+      control, which let attackers move to many systems, copy data and stay hidden.
+
+  why_it_matters:
+    business_risks:
+      financial_exposure: |
+        Direct: incident response, secret rotation across cloud and build systems, rebuilding servers and
+        outage losses. Indirect: partner liability when your stolen directory and emails are used to attack
+        customers and suppliers. No loss figures were published in the sources, so quantify using your own
+        scenarios, such as days of deployment freeze or cost of rebuilding a configuration server fleet.
+
+      regulatory_compliance: |
+        Theft of drive and directory contents can trigger breach notification under GDPR (72 hours to
+        regulators) and US state laws, plus SEC material-incident review for listed companies. Federal
+        agencies and their contractors face CISA's 1 December 2026 Puppet deadline under BOD 26-04.
+        Persistent access that outlasts password resets complicates any claim that an incident was contained.
+
+      competitive_impact: |
+        Espionage groups collect strategy, personnel and partner data. A supplier that becomes the springboard
+        into customers' networks loses trust and contracts. Customers increasingly ask suppliers to prove software
+        integrity and identity controls.
+
+      operational_disruption: |
+        Cleanup after a poisoned build environment means rotating secrets from a clean system and rebuilding
+        runners. An exploited Puppet or identity server can halt deployments and logins. Java crashes can mean direct
+        service outages. Recovery speed depends on inventory quality and log retention.
+
+    industry_patterns:
+      affected_sectors:
+        - "Technology and AI development"
+        - "Government and defense"
+        - "Non-profit and policy organizations"
+        - "Enterprise IT and infrastructure operations"
+        - "Any company running Java-based internet-facing services"
+      trend_analysis: |
+        This is a pattern. Microsoft-related Python packages were hit twice this year (durabletask in May,
+        agent-framework in November). Exploitation after disclosure is also getting faster, with Puppet exploitation
+        reportedly seen the day after the fix was released and AI-assisted attack tooling seen alongside
+        Java4Shell. Researchers also found the Puppet flaws with AI assistance. Expect shorter patch windows.
+
+technical_context:
+  vulnerability_details:
+    cve_identifier: "CVE-2026-114938 (Java4Shell, CVSS 8.1 per CISA); CVE-2026-115731 (Puppet, 9.4); CVE-2026-115732 (Puppet, 9.0); none for agent-framework or Cold Relic"
+    vulnerability_type: "Poisoned software package (credential theft); account takeover with persistence (cloud identity); memory-corruption flaw in Java text decoding; unsafe data handling in Puppet report processing"
+    affected_systems:
+      - "Python environments that installed agent-framework 1.26.1 or 1.26.2 (safe version: 1.26.0)"
+      - "Google Workspace tenants, Microsoft Entra ID single sign-on"
+      - "OpenJDK 17.0.6 and later (including 21 and 25) on x86-64 hosts exposing avx512vbmi"
+      - "Puppet Enterprise 2026.0.x, 2025.x, 2023.8.x before fixes; Puppet Core 8.x and 9.x; OpenVox"
+    exploitation_status: "agent-framework: confirmed malicious. Cold Relic: active espionage. Java4Shell: early exploitation attempts, no confirmed successful breach reported. Puppet: active (CISA KEV)."
+
+  attack_indicators:
+    - "Python started or installed on a build runner between about 8:35 and 9:20 p.m. UTC on 17 November 2026 with the affected package version"
+    - "Outbound traffic from servers or runners to webhook.site"
+    - "Unrecognized MFA devices, passkeys or backup codes on administrator accounts"
+    - "Repeated unexpected MFA approval prompts, or deleted or altered security alerts"
+    - "Mass file sharing to external addresses, or large Takeout-style exports"
+    - "Unusual new agent certificates or report submissions on Puppet servers"
+    - "Web requests with malformed encoded values or 'java4shell-recon' in browser identifiers"
+
+strategic_response:
+  executive_decisions:
+    - priority: "Critical"
+      decision: "Treat any build or cloud environment that may have installed agent-framework 1.26.1 or 1.26.2 as compromised until proven otherwise; rotate credentials from a clean system and review Azure and GitHub activity."
+      business_justification: "The stealer requests new tokens, so rotating stored secrets alone leaves exposure. Cloud identities unlock everything downstream."
+      cost_estimate: "Moderate: security and platform engineering days, short deployment pause. Far lower than a cloud account takeover."
+
+    - priority: "Critical"
+      decision: "Patch Puppet this week, tighten certificate signing, and rotate the signing authority if exposure is suspected."
+      business_justification: "Active exploitation is confirmed and a Puppet server controls many other systems. Theft of signing keys enables impersonating hosts."
+      cost_estimate: "Moderate: maintenance window plus validation. Rebuilding after compromise is many times higher."
+
+    - priority: "High"
+      decision: "Inventory Java runtimes, including those bundled inside vendor products and containers; patch internet-facing identity, build and collaboration tools first."
+      business_justification: "Exploitation needs specific conditions, but attacks are already being attempted. Inventory separates real exposure from noise and prevents panic spending."
+      cost_estimate: "Low to moderate: engineer time, plus vendor patch testing."
+
+    - priority: "High"
+      decision: "Mandate phishing-resistant sign-in for administrators, alert on new MFA devices or passkeys, and require out-of-band verification for any request from a 'known contact' to share documents."
+      business_justification: "Cold Relic got in by wearing down one approver and then used trusted names to reach partners. This protects your reputation with customers."
+      cost_estimate: "Low to moderate: licensing and policy changes using existing identity platforms."
+
+  governance_implications:
+    board_reporting: |
+      Track: time from vendor fix to deployment for critical flaws on internet-facing and control systems;
+      percentage of Java and Python dependencies inventoried; number of administrator accounts with
+      phishing-resistant sign-in; time to rotate all secrets after a pipeline incident; and number of unexpected MFA
+      enrollments investigated. Report which of these meet agreed targets.
+
+    disclosure_requirements: |
+      If employee, customer or partner data was copied, notification clocks may apply (GDPR within 72 hours,
+      US state laws, SEC material-incident review). Federal agencies must meet CISA's 1 December 2026 Puppet
+      deadline. Contractors should check contract clauses on incident notice to customers and primes. Keep
+      evidence: logs from the exposure window and a record of rotation decisions.
+
+analysis_and_insights:
+  uncomfortable_truths: |
+    Many companies treat "from Microsoft" or "from a trusted partner" as a security control. It is not. A
+    famous name on a package, or a familiar name on an email, tells you nothing about whether it is genuine today.
+    Your defenses must verify behavior and identity, not reputation.
+
+    Multi-factor authentication is not finished once it is switched on. Cold Relic beat it by exhausting a human
+    approver and then registering its own devices. A control you do not monitor for abuse is theater.
+
+    Alert fatigue is a business risk too. Researchers criticize the weekly "Something2Shell" panic: Java4Shell
+    needs a specific processor, a specific Java build and exposed input. The mature response is neither
+    ignoring nor panicking, but fast inventory-based triage. Vendors selling "continuous AI testing" should be asked
+    for reproducible proof of exploitability and clarity on how they handle your data and production safety.
+
+  strategic_lessons:
+    - "Central systems such as cloud identity, build runners and configuration servers deserve the strongest protection and monitoring."
+    - "Rotating stored secrets is insufficient when malware can request new tokens; rebuild from a clean environment."
+    - "Attackers persist through MFA devices and passkeys; audit them after every account compromise."
+    - "Inventory turns a headline into a decision within hours."
+    - "Survey data from vendors, such as the Intruder study on AI pentesting, is marketing context, not independent evidence."
+
+forward_outlook:
+  predictions: |
+    Expect more attacks on package registries and AI developer tooling, because a single poisoned release reaches
+    thousands of pipelines. Expect AI-assisted discovery and exploitation to keep shrinking the time between
+    disclosure and attack, as already seen with Puppet and Java4Shell.
+
+    Expect espionage groups to keep using one victim's real contacts to reach the next, making partner
+    ecosystems the weak point. Organizations that monitor identity changes, verify software provenance and test
+    often will report fewer and smaller incidents. The Intruder survey (500 leaders) shows 47% go over a month
+    between full pentests while 68% deploy code daily. It is vendor-sponsored, but the testing gap is real.
+
+source_articles:
+  - title: "Attackers Compromise Microsoft's Agent Framework PyPI Package to Steal Cloud Credentials"
+    url: "https://thehackernews.com/"
+    date: "2026-11-18"
+
+  - title: "Russian COLD RELIC Hackers Use Stolen Google Workspace Data to Breach Second U.S. Organization"
+    url: "https://thehackernews.com/"
+    date: "2026-11-18"
+
+  - title: "CISA Urges Immediate Patching of Java4Shell Flaw That Could Allow Remote Code Execution"
+    url: "https://thehackernews.com/"
+    date: "2026-11-18"
+
+  - title: "Hackers Exploiting Critical Puppet RCE Flaw Affecting Enterprise Management Servers"
+    url: "https://thehackernews.com/"
+    date: "2026-11-18"
+
+  - title: "Quality Isn't The Main Worry About AI Pentesting - Data Privacy and Production Safety Are"
+    url: "https://thehackernews.com/"
+    date: "2026-11-18"
+
+metadata:
+  author: "Am Dum Dee"
+  last_updated: "2026-11-18"
+  threat_category: ["Supply Chain", "Cloud Identity Abuse", "Nation-State Espionage", "Vulnerability Exploitation"]
+  affected_industries: ["Technology", "Government", "Defense", "Non-profit", "Enterprise IT"]
+  confidence_level: "High"
