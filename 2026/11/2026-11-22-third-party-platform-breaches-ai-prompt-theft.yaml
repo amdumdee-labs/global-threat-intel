@@ -1,0 +1,219 @@
+# Filename: 2026-11-24-third-party-platform-breaches-ai-prompt-theft.yaml
+---
+threat_summary:
+  title: "Your Data, Their Platforms: Third-Party Breaches Hit Payments, Network Devices and AI Prompts"
+  report_date: "2026-11-22"
+  threat_id: "TI-20261122-002"
+  severity_business: "Critical"
+  severity_technical: "High"
+
+  executive_summary: |
+    Reports published 22 November 2026 show attackers going after the platforms organizations rent rather
+    than the organizations themselves. Cleverbridge, an e-commerce and payments provider, confirmed theft of
+    card numbers, expiry dates and CVV security codes. GL.iNet confirmed attackers abused its cloud
+    management service to install custom malware on customers' routers and remote-control (KVM) devices.
+    Dragos research found attackers inside three AI inference providers for months, copying customer
+    prompts, including those marked "Zero Data Retention". Signal separately warned that AI assistants built
+    into phones can read private chats off the screen.
+
+    Boards should care because in each case the customer controlled neither the failure nor the timeline.
+    Payment data, network access and confidential AI prompts sat with vendors whose security claims could
+    not be verified, and in several cases the vendors themselves did not know for months.
+
+    Time sensitivity is high. Stolen Cleverbridge cards are usable now.
+    GL.iNet's fix does not remove malware already installed. Some AI providers have not publicly disclosed
+    their incidents, so secrets sent to AI services since July should be treated as at risk.
+
+threat_intelligence:
+  what_happened:
+    incident_overview: |
+      Cleverbridge: the company detected unauthorized activity on 4 November, took systems offline briefly,
+      and later found a third party had copied payment card data stored on its platform. Notices began 20
+      November. Per a notification seen by BleepingComputer, the data includes card number, expiry date and
+      CVV/CVC, but no names or contact details. It was not ransomware. Cleverbridge counts Red Hat, SUSE,
+      Tenable, Veeam, Jamf, Sony and Parallels as customers but has not said whose buyers were affected,
+      how many people, or how attackers got in.
+
+      GL.iNet: an advisory dated 20 November confirmed an unauthorized party exploited a flaw in its cloud
+      remote-management service to install malware on routers and KVM devices. The cloud hole is closed,
+      but infected devices stay infected. One consultancy, RemoteToHome, found suspicious activity on 152
+      of 183 routers it manages, including 24 with attacker-controlled remote shells. It cautions that
+      older infections may be unrelated. Some malicious files date to December 2025, so exposure may be
+      long-running. The company has not said how many customers are affected or whether data was taken.
+
+      AI inference providers: Dragos seeded about two million prompts with fake credentials between July and
+      November and watched who used them. Three AI hosting providers were found compromised, the earliest
+      from mid-July, and none knew until told. Attackers copied traffic, tested stolen cloud keys within
+      hours, and generated tens of thousands of cloud API calls. Requests marked as not stored were taken
+      too. OpenRouter, the routing gateway, removed three providers and withdrew 125 endpoints from Zero
+      Data Retention eligibility. Providers Phala and Together AI have each disclosed incidents.
+
+      Signal: new protections block screenshots on iOS 27 and trigger Screen Security on Android when an AI
+      assistant tries to read the screen. Signal admits the fix is incomplete and that it cannot protect
+      users on macOS at all.
+
+    affected_organizations:
+      - name: "Cleverbridge customers and their software buyers (software and SaaS vendors)"
+        impact: "Card numbers, expiry dates and CVV codes stolen; card-fraud risk, reissuance costs and brand damage for merchants whose buyers were affected. Scale undisclosed."
+      - name: "GL.iNet router and KVM owners (homes, small offices, remote workers, IT operators)"
+        impact: "Devices carrying backdoors; traffic and any computer attached to an infected KVM potentially exposed. Scale undisclosed."
+      - name: "Customers of three AI inference providers and OpenRouter users"
+        impact: "Prompts, credentials and cloud keys exposed; unauthorized cloud access with tens of thousands of API calls observed in the research."
+      - name: "Signal users and organizations relying on private messaging"
+        impact: "Chat content readable by OS-level AI assistants outside Signal's control."
+
+    attack_methodology: |
+      Attackers went upstream. At Cleverbridge they reached stored payment data. At GL.iNet they abused the
+      vendor's own remote-management channel to push malware to customers' devices, including software that
+      hides its network connections from administrators. In the AI cases they sat at the point where requests
+      arrive and copied whatever passed through, then tried stolen cloud keys at once. In one case an AI
+      coding assistant committed a credential to a public code repository, which led to a prompt-sample
+      download. One attacker appears to have used an AI penetration-testing tool only to confirm that stolen
+      keys still worked.
+
+  why_it_matters:
+    business_risks:
+      financial_exposure: |
+        None of the sources publish total loss figures. Direct costs include card reissuance, chargebacks and
+        fraud losses at merchants and issuers, credit-monitoring services (Cleverbridge is funding these for
+        its customers), incident response, and cloud bills if stolen keys are abused. Of the 183 routers
+        RemoteToHome checked, 83 percent showed suspicious activity, so device-vendor exposure can be wide.
+
+      regulatory_compliance: |
+        Storing CVV/CVC after a payment is authorized is prohibited by the PCI DSS card-industry standard,
+        so Cleverbridge's reported theft of those codes raises questions its customers will be asked to
+        answer. Privacy laws such as GDPR (fines up to 4 percent of global turnover) apply where personal data
+        sits in AI prompts. "Zero Data Retention" promises in contracts may now be unenforceable assurances
+        rather than verified controls. This report is not legal advice.
+
+      competitive_impact: |
+        Software vendors that sell through a third-party payment platform inherit the reputational hit when
+        buyers' cards are stolen. Firms that sent proprietary code, strategy or customer data to cheap AI
+        services risk that material being read by competitors or foreign labs. Dragos reported that one
+        Chinese AI lab fetched secret links in over half of seeded prompts, including about two-thirds of
+        those marked no data collection.
+
+      operational_disruption: |
+        Infected routers and KVMs may need a full firmware reinstall without saved settings, since malicious
+        files can survive an ordinary update, and every computer behind an infected KVM may need analysis.
+        Rotating credentials sent to AI services since July is a large cross-team effort.
+
+    industry_patterns:
+      affected_sectors:
+        - "E-commerce and software distribution"
+        - "Networking hardware and managed IT"
+        - "AI and cloud services"
+        - "Financial services and card issuers"
+        - "Any enterprise that routes secrets through AI agents"
+
+      trend_analysis: |
+        This is a clear pattern: concentrated third parties are attacked once and the damage fans out to many
+        customers. The AI case adds a new element. Railway said in October that its own intrusion looked like
+        part of a series aimed at platform companies with the end goal of reaching AI inference providers.
+        Expect the trend to worsen as agents send more secrets in prompts by default.
+
+technical_context:
+  vulnerability_details:
+    cve_identifier: "N/A (no CVE cited in the source reports)"
+    vulnerability_type: "Cloud management service flaw leading to device takeover (GL.iNet); stored card data theft (Cleverbridge); compromise of AI hosting infrastructure and traffic copying (inference providers); AI assistants reading app screens (Signal)"
+    affected_systems:
+      - "GL.iNet GoodCloud, routers and KVMs (RM1, RM1V2, RM1PE, RM4PE, RM10 on 1.10.3 or later is the stated fix; RMQ1 1.8.7 or later)"
+      - "Cleverbridge e-commerce platform"
+      - "Three unnamed AI inference providers; Phala, Together AI and Novita have disclosed related incidents"
+      - "Signal on iOS 27, Android and macOS"
+    exploitation_status: "Active for all four; GL.iNet attacker links are suspected Chinese-speaking, with no named group or confirmed attribution"
+
+  attack_indicators:
+    - "Unexpected card charges or issuer fraud alerts on cards used with Cleverbridge-hosted checkouts"
+    - "Routers or KVMs running a process named crond -i /tmp/.log, or reaching the IP addresses 66.245.219[.]252, 65.20.71[.]131 or 170.39.226[.]219"
+    - "Cloud logs showing key testing, bucket listing, secrets searches or new IAM users shortly after secrets were sent to an AI service"
+    - "Unexplained cloud API call spikes; web requests with the user agents artex-agent or artex-judge-r121"
+    - "Fake credentials or secret links placed in AI traffic being used by someone else"
+
+strategic_response:
+  executive_decisions:
+    - priority: "Critical"
+      decision: "Order a third-party data map: which vendors hold card data, device access or AI prompts, and which can reach your systems."
+      business_justification: "You cannot contain what you cannot locate; all four incidents began outside your perimeter."
+      cost_estimate: "Moderate: security, procurement and legal time; no new tooling required to start."
+
+    - priority: "Critical"
+      decision: "Set a policy that secrets, credentials and customer data may not be sent to AI services, and place tripwire fake credentials in AI traffic."
+      business_justification: "Privacy flags protect only the first hop; a free canary credential tells you within minutes if a prompt was read."
+      cost_estimate: "Low: policy work and free tripwire tokens; some developer-process change."
+
+    - priority: "High"
+      decision: "Require payment vendors to prove they do not store CVV data and to commit to notification timelines in contracts."
+      business_justification: "Stored card codes turn one vendor breach into direct customer fraud and card-brand scrutiny."
+      cost_estimate: "Low: contract renegotiation effort."
+
+    - priority: "High"
+      decision: "Treat remote-management cloud services and network devices as high-risk assets: segment them, and reinstall rather than patch any device suspected of infection."
+      business_justification: "Vendor fixes do not remove malware already installed, and persistence can survive ordinary updates."
+      cost_estimate: "Moderate: device replacement or reinstall labor for affected sites."
+
+  governance_implications:
+    board_reporting: |
+      Report quarterly: number of vendors holding regulated or confidential data and share with verified
+      security evidence; time from vendor notice to internal triage; count of credentials rotated after
+      vendor incidents; volume of sensitive data sent to AI services; tripwire alerts triggered; and network
+      devices managed by vendor cloud tools.
+
+    disclosure_requirements: |
+      Log each vendor notice as a third-party incident and assess contract, payment-card and privacy-law
+      duties, including whether card networks, regulators or customers must be told. Keep evidence before
+      resetting devices. Seek legal advice on AI prompts that contained personal or privileged information.
+
+analysis_and_insights:
+  uncomfortable_truths: |
+    Vendor security questionnaires and "Zero Data Retention" badges are largely paperwork. In the Dragos
+    research, requests flagged as not stored were stolen and read anyway, and the compromised providers did
+    not know. Your due diligence confirmed a promise, not a control.
+
+    Many "secure AI" and device-management pitches ask you to centralize more trust in one platform.
+    Centralization made these breaches efficient for attackers. Even Signal concedes its own protection
+    against AI assistants is incomplete, so any claim of full protection needs independent testing.
+
+  strategic_lessons:
+    - "A vendor's privacy flag is a promise, not evidence; test it with tripwires."
+    - "Do not let any vendor store what card rules say it should not, and ask for proof."
+    - "Fixing the vendor's cloud does not clean your infected device; plan for rebuilds."
+    - "Treat every secret ever sent to an AI service as potentially read, and rotate it."
+    - "Choose AI providers deliberately; the cheapest route is the default risk."
+
+forward_outlook:
+  predictions: |
+    Over the next 6 to 12 months, expect more disclosures from AI service providers as researchers copy
+    the canary approach, and more attacks on platform companies as a path to AI infrastructure. Enterprise
+    buyers will likely demand verifiable data-handling evidence, not attestations.
+
+    Medium confidence: several incident scales are undisclosed, and some GL.iNet infections may predate
+    the November activity.
+
+source_articles:
+  - title: "Hackers exploit GL.iNet cloud flaw to infect routers, KVM devices"
+    url: "https://www.bleepingcomputer.com (publisher site; article permalink not included in the supplied text)"
+    date: "2026-11-22"
+
+  - title: "Cleverbridge warns hackers stole credit card numbers, CVVs in data breach"
+    url: "https://www.bleepingcomputer.com (publisher site; article permalink not included in the supplied text)"
+    date: "2026-11-22"
+
+  - title: "Signal to block Siri, Gemini AI from capturing chats on iOS, Android"
+    url: "https://www.bleepingcomputer.com (publisher site; article permalink not included in the supplied text)"
+    date: "2026-11-22"
+
+  - title: "Get a refurbished 10th Gen iPad with USB-C for $279.99 (promotional deal; not used in the analysis)"
+    url: "https://www.bleepingcomputer.com (publisher site; article permalink not included in the supplied text)"
+    date: "2026-11-22"
+
+  - title: "OpenRouter Drops 3 Providers After Researchers Catch Months of Prompt Theft at AI Hosting Firms"
+    url: "https://thehackernews.com (publisher site; article permalink not included in the supplied text)"
+    date: "2026-11-22"
+
+metadata:
+  author: "Am Dum Dee"
+  last_updated: "2026-11-22"
+  threat_category: ["Third-party and supply chain risk", "Payment card theft", "IoT and network device compromise", "AI service data exposure"]
+  affected_industries: ["E-commerce", "Software and SaaS", "Networking and IT services", "AI and cloud", "Financial services"]
+  confidence_level: "Medium"
